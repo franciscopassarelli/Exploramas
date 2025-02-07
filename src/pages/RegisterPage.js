@@ -7,6 +7,8 @@ const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showAlert, setShowAlert] = useState(false); // Estado para mostrar la alerta
+  const [alertMessage, setAlertMessage] = useState(''); // Mensaje de la alerta
   const { login } = useAuth(); // Usamos el contexto para hacer el login
   const navigate = useNavigate();
 
@@ -15,14 +17,18 @@ const RegisterPage = () => {
 
     // Verificar si las contraseñas coinciden
     if (password !== confirmPassword) {
-      alert("¡Las contraseñas no coinciden!");
+      setAlertMessage("¡Las contraseñas no coinciden!");
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000); // Ocultar la alerta después de 2 segundos
       return;
     }
 
     // Verificar si el usuario ya existe
     const existingUser = localStorage.getItem(email);
     if (existingUser) {
-      alert('Este correo electrónico ya está registrado.');
+      setAlertMessage('Este correo electrónico ya está registrado.');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000); // Ocultar la alerta después de 2 segundos
       return;
     }
 
@@ -35,8 +41,12 @@ const RegisterPage = () => {
     // Loguear al usuario inmediatamente
     login(user);
 
-    alert("Registro exitoso");
-    navigate('/'); // Redirigir al home o la página principal
+    setAlertMessage("Registro exitoso");
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+      navigate('/'); // Redirigir al home o la página principal
+    }, 2000); // Redirigir después de 2 segundos
   };
 
   return (
@@ -101,6 +111,13 @@ const RegisterPage = () => {
           </a>
         </p>
       </div>
+
+      {/* Alerta estilizada */}
+      {showAlert && (
+        <div className="fixed top-0 left-0 w-full p-4 bg-gray-800 text-white text-center font-semibold shadow-lg transform transition-all duration-300 ease-in-out">
+          {alertMessage}
+        </div>
+      )}
     </div>
   );
 };

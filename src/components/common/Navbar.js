@@ -4,7 +4,9 @@ import { useAuth } from '../auth/AuthContext'; // Importar el hook
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Estado para el dropdown de "Mis Viajes"
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false); // Nuevo estado para mostrar la modal
   const { user, logout } = useAuth(); // Obtener el usuario y logout desde el AuthContext
   const navigate = useNavigate();
   const location = useLocation(); // Obtenemos la ruta actual
@@ -17,12 +19,22 @@ const Navbar = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const toggleMobileDropdown = () => {
+    setIsMobileDropdownOpen(!isMobileDropdownOpen); // Cambiar el estado del dropdown móvil
+  };
+
   const handleLogout = () => {
-    const confirmLogout = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
-    if (confirmLogout) {
-      logout(); // Llamar al método logout del AuthContext
-      navigate('/login'); // Redirigir a la página de login
-    }
+    setShowModal(true); // Mostrar la modal de confirmación
+  };
+
+  const confirmLogout = () => {
+    logout(); // Llamar al método logout del AuthContext
+    navigate('/login'); // Redirigir a la página de login
+    setShowModal(false); // Cerrar la modal después del logout
+  };
+
+  const cancelLogout = () => {
+    setShowModal(false); // Cerrar la modal sin hacer nada
   };
 
   const isActiveLink = (path) => location.pathname === path; // Función para verificar si el link está activo
@@ -78,7 +90,7 @@ const Navbar = () => {
               {isActiveLink('/mis-viajes') && <span className="ml-2">✈️</span>}
             </button>
             {isDropdownOpen && (
-              <div className="absolute bg-white shadow-lg rounded-lg mt-2 w-48 p-2 flex flex-col z-10"> {/* Añadimos z-10 */}
+              <div className="absolute bg-white shadow-lg rounded-lg mt-2 w-48 p-2 flex flex-col z-10">
                 <Link 
                   to="/mis-viajes" 
                   className={`text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg px-4 py-2 transition-colors duration-200 ${isActiveLink('/mis-viajes') ? 'font-semibold' : ''}`}
@@ -111,6 +123,7 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Menú móvil */}
       {isMenuOpen && (
         <div className="md:hidden bg-white shadow-lg rounded-lg p-4 mt-2 transform transition-all duration-300 ease-in-out">
           <div className="flex flex-col gap-4">
@@ -130,13 +143,33 @@ const Navbar = () => {
               {isActiveLink('/packages') && <span className="ml-2">✈️</span>}
             </Link>
 
-            <Link 
-              to="/mis-viajes" 
-              className={`text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg px-4 py-2 transition-colors duration-200 ${isActiveLink('/mis-viajes') ? 'font-semibold' : ''}`}
-            >
-              Mis Viajes
-              {isActiveLink('/mis-viajes') && <span className="ml-2">✈️</span>}
-            </Link>
+            <div className="relative">
+              <button 
+                onClick={toggleMobileDropdown}
+                className="text-gray-600 hover:text-gray-800 flex items-center gap-2"
+              >
+                Mis Viajes
+                {isActiveLink('/mis-viajes') && <span className="ml-2">✈️</span>}
+              </button>
+              {isMobileDropdownOpen && (
+                <div className="absolute bg-white shadow-lg rounded-lg mt-2 w-48 p-2 flex flex-col z-10">
+                  <Link 
+                    to="/mis-viajes" 
+                    className={`text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg px-4 py-2 transition-colors duration-200 ${isActiveLink('/mis-viajes') ? 'font-semibold' : ''}`}
+                  >
+                    Mis Viajes
+                    {isActiveLink('/mis-viajes') && <span className="ml-2">✈️</span>}
+                  </Link>
+                  <Link 
+                    to="/mis-viajes-comprados" 
+                    className={`text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg px-4 py-2 transition-colors duration-200 ${isActiveLink('/mis-viajes-comprados') ? 'font-semibold' : ''}`}
+                  >
+                    Mis Viajes Comprados
+                    {isActiveLink('/mis-viajes-comprados') && <span className="ml-2">✈️</span>}
+                  </Link>
+                </div>
+              )}
+            </div>
 
             {user ? (
               <>
@@ -149,6 +182,19 @@ const Navbar = () => {
                 <Link to="/register" className="w-full py-2 px-4 bg-[rgb(26,54,93)] text-white rounded-md hover:bg-[rgb(26,54,93,0.8)]">Registrarse</Link>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmación */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 className="text-lg font-semibold mb-4">¿Estás seguro de que deseas cerrar sesión?</h2>
+            <div className="flex justify-between">
+              <button onClick={confirmLogout} className="py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700">Sí, cerrar sesión</button>
+              <button onClick={cancelLogout} className="py-2 px-4 bg-gray-400 text-white rounded-md hover:bg-gray-500">Cancelar</button>
+            </div>
           </div>
         </div>
       )}

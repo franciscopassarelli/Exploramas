@@ -12,6 +12,8 @@ const ConfirmationPurchase = () => {
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCVC, setCardCVC] = useState('');
   const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [showAlert, setShowAlert] = useState(false); // Alerta de pago
+  const [alertMessage, setAlertMessage] = useState(''); // Mensaje de la alerta
 
   // Función para formatear la fecha de la compra
   const formatDate = (date) => {
@@ -40,23 +42,22 @@ const ConfirmationPurchase = () => {
       alert("ID copiado al portapapeles.");
     }
   };
+
   const handleRedirect = () => {
     if (!isLoggedIn) {
       alert("Por favor, inicia sesión para completar tu compra.");
       return;
     }
 
-
     const savePurchasedTrip = (userId, tripData) => {
       const savedTrips = JSON.parse(localStorage.getItem(`purchasedTrips_${userId}`)) || [];
       savedTrips.push(tripData);
       localStorage.setItem(`purchasedTrips_${userId}`, JSON.stringify(savedTrips));
     };
-    
-  
+
     // Obtener el ID del usuario logueado
     const userId = user.id; // Asumimos que el objeto `user` tiene un `id`
-  
+
     // Agregar el viaje a la lista de viajes comprados en localStorage del usuario
     const purchasedTrip = {
       name: booking.name,
@@ -65,23 +66,21 @@ const ConfirmationPurchase = () => {
       description: booking.description,
       image: booking.image, // Puedes guardar la imagen si lo deseas
     };
-  
+
     // Recuperar las compras anteriores del usuario desde localStorage
     let purchasedTrips = JSON.parse(localStorage.getItem(`purchasedTrips_${userId}`)) || [];
-  
+
     // Agregar el nuevo viaje comprado
     purchasedTrips.push(purchasedTrip);
 
     savePurchasedTrip(userId, purchasedTrip);
-  
+
     // Guardar las compras actualizadas en localStorage bajo la clave del usuario
     localStorage.setItem(`purchasedTrips_${userId}`, JSON.stringify(purchasedTrips));
-  
+
     removeBookedItem(); // Eliminar el viaje de las reservas locales
     navigate('/mis-viajes-comprados'); // Redirigir a la página de "Mis viajes comprados"
   };
-  
-  
 
   const handlePaymentSubmit = (e) => {
     e.preventDefault();
@@ -89,8 +88,15 @@ const ConfirmationPurchase = () => {
     // Simulamos el proceso de pago con un pequeño retraso
     setTimeout(() => {
       setPaymentProcessing(false);
-      alert('Pago simulado realizado con éxito. ¡Gracias por tu compra!');
-    }, 2000);
+      setAlertMessage('Pago simulado realizado con éxito. ¡Gracias por tu compra!');
+      setShowAlert(true);
+
+      // Ocultar la alerta después de 2 segundos
+      setTimeout(() => {
+        setShowAlert(false);
+        handleRedirect(); // Redirigir a la página de "Mis viajes comprados"
+      }, 2000);
+    }, 2000); // Simular el tiempo de procesamiento del pago
   };
 
   if (!booking) {
@@ -185,6 +191,13 @@ const ConfirmationPurchase = () => {
               </button>
             </form>
           </div>
+
+          {/* Alerta de pago */}
+          {showAlert && (
+            <div className="fixed top-0 left-0 w-full p-4 bg-gray-800 text-white text-center font-semibold shadow-lg transform transition-all duration-300 ease-in-out">
+              {alertMessage}
+            </div>
+          )}
 
           <div className="flex justify-center mt-6 gap-4">
             {isLoggedIn ? (

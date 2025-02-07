@@ -1,4 +1,3 @@
-// src/pages/LoginPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
@@ -8,6 +7,8 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [alertMessage, setAlertMessage] = useState(''); // Estado para el mensaje de la alerta
+  const [showAlert, setShowAlert] = useState(false); // Estado para mostrar la alerta
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,15 +20,25 @@ const LoginPage = () => {
       const user = JSON.parse(storedUser);
       if (user.password === password) {
         login(user); // Logueamos al usuario en el contexto
-        alert('Inicio de sesión exitoso');
-        navigate('/'); // Redirigimos al home
+        setAlertMessage('Inicio de sesión exitoso');
+        setShowAlert(true); // Mostramos la alerta
+        setTimeout(() => navigate('/'), 1500); // Redirigimos después de 1.5 segundos
       } else {
-        alert('Contraseña incorrecta');
+        setAlertMessage('Contraseña incorrecta');
+        setShowAlert(true); // Mostramos la alerta
       }
     } else {
-      alert('Usuario no encontrado');
+      setAlertMessage('Usuario no encontrado');
+      setShowAlert(true); // Mostramos la alerta
     }
   };
+
+  // Después de mostrar la alerta, la cerramos automáticamente después de 3 segundos
+  React.useEffect(() => {
+    if (showAlert) {
+      setTimeout(() => setShowAlert(false), 3000); // Cerrar la alerta después de 3 segundos
+    }
+  }, [showAlert]);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#2c3e50] to-[#34495e] flex items-center justify-center">
@@ -76,6 +87,14 @@ const LoginPage = () => {
           </a>
         </p>
       </div>
+
+      {/* Alerta estilo toast en la parte superior */}
+      {showAlert && (
+  <div className="fixed top-0 left-0 w-full p-4 bg-gray-800 text-white text-center font-semibold shadow-lg transform transition-all duration-300 ease-in-out">
+    {alertMessage}
+  </div>
+)}
+
     </div>
   );
 };
