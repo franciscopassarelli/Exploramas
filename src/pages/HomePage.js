@@ -58,10 +58,14 @@ const HomePage = () => {
       }}>
         <div className="absolute inset-0 bg-black opacity-50" />
         <div className="relative z-10 text-center text-white px-4 md:px-8">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-6 animate-fadeIn">Descubre tu próxima aventura</h1>
-          <p className="text-lg sm:text-xl mb-8 max-w-3xl mx-auto">
-            Explora los destinos más bellos del mundo con nuestros paquetes de viaje seleccionados
-          </p>
+        <h1 className="text-4xl sm:text-5xl font-bold mb-6 animate-fadeIn titulo-brillante">
+  Descubre tu próxima aventura
+</h1>
+
+<p className="text-lg sm:text-xl mb-8 max-w-3xl mx-auto p-dorado">
+  Explora los destinos más bellos del mundo con nuestros paquetes de viaje seleccionados
+</p>
+
           {/* Barra de búsqueda con lupa dentro */}
           <div className="relative w-full sm:w-auto max-w-md mx-auto">
             <input

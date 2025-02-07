@@ -2,3 +2,63 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Estilo para el título con animación de brillo y borde oscuro */
+@keyframes brillo {
+  0% {
+    text-shadow: 0 0 3px #fff, 0 0 5px #ccc, 0 0 8px #555; /* Borde oscuro */
+  }
+  50% {
+    text-shadow: 0 0 5px #fff, 0 0 7px #fff, 0 0 10px #f1c40f; /* Brillo dorado */
+  }
+  100% {
+    text-shadow: 0 0 3px #fff, 0 0 5px #ccc, 0 0 8px #555; /* Borde oscuro */
+  }
+}
+
+/* Aplicar el efecto al título */
+.titulo-brillante {
+  animation: brillo 2s infinite alternate;
+  color: #fff; /* O cualquier color de texto que prefieras */
+}
+
+
+
+/* Estilo para el título con animación de brillo sutil y suave */
+@keyframes brilloSutil {
+  0% {
+    text-shadow: 0 0 2px #fff, 0 0 4px #ccc;
+  }
+  50% {
+    text-shadow: 0 0 4px #fff, 0 0 6px #ccc;
+  }
+  100% {
+    text-shadow: 0 0 2px #fff, 0 0 4px #ccc;
+  }
+}
+
+/* Aplicar el efecto al título */
+.titulo-brillante-sutil {
+  animation: brilloSutil 2s infinite alternate;
+  color: #fff; /* O cualquier color de texto que prefieras */
+}
+
+
+/* Estilo para el párrafo con animación de brillo dorado y muy sutil */
+@keyframes brilloDorado {
+  0% {
+    text-shadow: 0 0 1px #ffd700, 0 0 2px #ffd700;
+  }
+  50% {
+    text-shadow: 0 0 2px #ffd700, 0 0 3px #ffd700;
+  }
+  100% {
+    text-shadow: 0 0 1px #ffd700, 0 0 2px #ffd700;
+  }
+}
+
+/* Aplicar el efecto dorado y suave */
+.p-dorado {
+  animation: brilloDorado 3s infinite alternate;
+  color: #ffffff; /* Mantiene el texto blanco */
+}

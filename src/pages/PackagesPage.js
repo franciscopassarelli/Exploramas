@@ -216,19 +216,21 @@ const PackagesPage = () => {
             backgroundPosition: "center",
           }}
         />
-        <div className="absolute inset-0 bg-primary/60 flex items-center justify-center">
-          <div className="text-center text-white max-w-4xl px-4">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              ¡Tu viaje ya está listo!
-            </h1>
-            <h2 className="text-2xl md:text-3xl mb-4">
-              Nosotros lo armamos por vos
-            </h2>
-            <p className="text-lg md:text-xl">
-              Elegí entre paquetes sugeridos, destinos combinados o Circuitos y preparate para viajar.
-            </p>
-          </div>
-        </div>
+      <div className="absolute inset-0 bg-primary/60 flex items-center justify-center">
+  <div className="text-center text-white max-w-4xl px-4">
+    <h1 className="text-4xl md:text-5xl font-bold mb-4 titulo-brillante-sutil">
+      ¡Tu viaje ya está listo!
+    </h1>
+    <h2 className="text-2xl md:text-3xl mb-4 titulo-brillante-sutil">
+      Nosotros lo armamos por vos
+    </h2>
+    <p className="text-lg md:text-xl p-dorado">
+  Elegí entre paquetes sugeridos, destinos combinados o Circuitos y preparate para viajar.
+</p>
+
+  </div>
+</div>
+
       </div>
 
       <div className="container mx-auto px-4 py-8 flex-grow">
