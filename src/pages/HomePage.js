@@ -1,24 +1,52 @@
 import React, { useState, useEffect } from "react";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid"; // Asegúrate de que la ruta sea correcta
-import FeaturedDestinations from "../components/destinations/FeaturedDestinations"; // Asegúrate de que la ruta sea correcta
-import { Footer } from "../components/common/Footer"; // Asegúrate de que la ruta sea correcta
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid"; 
+import FeaturedDestinations from "../components/destinations/FeaturedDestinations"; 
+import { Footer } from "../components/common/Footer"; 
 
 const HomePage = () => {
-  const [currentSection, setCurrentSection] = useState(0); // Para controlar el índice del carrusel
-  const [fade, setFade] = useState(true); // Para controlar el fade in y fade out
+  const [currentSection, setCurrentSection] = useState(0); 
+  const [fade, setFade] = useState(true); 
+  const [search, setSearch] = useState(""); 
+
+  // Lista de destinos (sin API ni backend)
+  const destinations = [
+    "Playa del Carmen, México", 
+    "Montañas de los Andes, Mendoza Argentina", 
+    "Tokio Japón", 
+    "París Francia", 
+    "Barcelona España",
+    "Bariloche, Argentina", 
+    "Bali Indonesia",
+    "Santorini Grecia",
+    "Machu Picchu, Peru",
+    "Salta y Jujuy, Argentina",
+    "Mar del Plata, Argentina",
+    "Ushuaia fin del mundo, Argentina",
+    "Cordoba, Argentina Tour",
+    "Auckland, Nueva Zelanda",
+    "Miami Beach, Estados Unidos",
+    "Cataratas del Iguzú, Argentina"
+  ];
+
+  // Filtrar destinos con base en la búsqueda, considerando las primeras 3 letras de cada palabra
+  const filteredDestinations = destinations.filter(destination => {
+    // Dividir el destino en palabras
+    const words = destination.split(" ");
+    // Verificar si alguna palabra comienza exactamente con las letras de la búsqueda (al menos 3 letras)
+    return words.some(word => 
+      word.toLowerCase().startsWith(search.toLowerCase())
+    );
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFade(false); // Iniciar el desvanecimiento antes de cambiar la sección
-
+      setFade(false); 
       setTimeout(() => {
-        setCurrentSection((prev) => (prev === 0 ? 1 : 0)); // Cambiar de sección después del desvanecimiento
-        setFade(true); // Volver a activar el fade después de cambiar la sección
-      }, 500); // Tiempo para esperar a que termine el desvanecimiento
+        setCurrentSection((prev) => (prev === 0 ? 1 : 0)); 
+        setFade(true); 
+      }, 500); 
+    }, 8000); 
 
-    }, 8000); // Cambio de sección cada 8 segundos
-
-    // Limpiar el intervalo cuando el componente se desmonte
     return () => clearInterval(interval);
   }, []);
 
@@ -34,39 +62,55 @@ const HomePage = () => {
           <p className="text-lg sm:text-xl mb-8 max-w-3xl mx-auto">
             Explora los destinos más bellos del mundo con nuestros paquetes de viaje seleccionados
           </p>
-          {/* Componente de búsqueda estilizado */}
-          <div className="flex justify-center space-x-4 items-center mx-auto">
+          {/* Barra de búsqueda con lupa dentro */}
+          <div className="relative w-full sm:w-auto max-w-md mx-auto">
             <input
               type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar destinos"
-              className="w-full sm:w-auto px-6 py-3 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pastelBlue focus:ring-opacity-50 transition-all duration-300 ease-in-out"
+              className="w-full px-6 py-3 pl-10 pr-4 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pastelBlue focus:ring-opacity-50 transition-all duration-300 ease-in-out 
+                         border-2 border-gray-300 hover:border-gray-400 focus:border-[#FF7C5D] shadow-md"
             />
-            <button
-              className="flex items-center px-8 py-3 rounded-lg text-white transition-all duration-300 ease-in-out hover:bg-[rgb(255_124_93)]/90"
-              style={{
-                backgroundColor: "rgb(255 124 93)", // Color especificado para el botón
-              }}
-            >
-              <MagnifyingGlassIcon className="h-5 w-5 mr-2" /> {/* Ícono de lupa */}
-              Buscar
-            </button>
+            {/* Lupa dentro del input */}
+            <MagnifyingGlassIcon 
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500 transition-colors duration-200 hover:text-[#FF7C5D]" 
+            />
           </div>
+
+          {/* Mostrar destinos filtrados */}
+          {search && (
+  <div className="mt-6 text-white">
+    <h3 className="font-semibold mb-4">Resultados de búsqueda:</h3>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 sm:gap-2">
+      {filteredDestinations.length > 0 ? (
+        filteredDestinations.map((destination, index) => (
+          <div key={index} className="bg-[rgb(26,54,93)] text-white p-2 sm:p-3 rounded-md shadow-sm hover:shadow-md hover:scale-102 hover:bg-[rgb(26,54,93,0.8)] transition-all duration-150 ease-in-out">
+            <p className="text-xs sm:text-sm font-semibold">{destination}</p>
+          </div>
+        ))
+      ) : (
+        <div className="text-lg">No se encontraron destinos.</div>
+      )}
+    </div>
+  </div>
+)}
+
+
+
+
         </div>
       </div>
 
-      {/* Sección del carrusel: "Por qué elegirnos" y "Cómo funciona" */}
+      {/* Resto de las secciones */}
       <div className="py-16 text-center">
-        <h2
-          className={`text-3xl font-bold text-gray-800 mb-6 transition-opacity duration-1000 ${fade ? "opacity-100" : "opacity-0"}`}
-        >
+        <h2 className={`text-3xl font-bold text-gray-800 mb-6 transition-opacity duration-1000 ${fade ? "opacity-100" : "opacity-0"}`}>
           {currentSection === 0 ? "¿Por qué elegirnos?" : "¿Cómo funciona?"}
         </h2>
 
         {/* Contenido de las tarjetas */}
         <div className="max-w-5xl mx-auto">
-          <div
-            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 transition-opacity duration-2000 ${fade ? "opacity-100" : "opacity-0"}`}
-          >
+          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 transition-opacity duration-2000 ${fade ? "opacity-100" : "opacity-0"}`}>
             {currentSection === 0 ? (
               <>
                 <div className="bg-white p-6 rounded-lg shadow-lg">

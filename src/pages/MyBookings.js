@@ -111,6 +111,17 @@ const MyBookings = () => {
               </div>
             </div>
           ))}
+
+
+<div className="text-center mt-8">
+  <button
+    onClick={() => navigate('/mis-viajes-comprados')}
+    className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+  >
+    Ver mis viajes comprados
+  </button>
+</div>
+
         </div>
       </div>
     </div>

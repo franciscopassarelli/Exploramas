@@ -8,6 +8,10 @@ const ConfirmationPurchase = () => {
 
   const [transactionId, setTransactionId] = useState(null); // ID de transacción
   const [purchaseDate] = useState(new Date()); // Fecha de compra
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCVC, setCardCVC] = useState('');
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   // Función para formatear la fecha de la compra
   const formatDate = (date) => {
@@ -15,7 +19,6 @@ const ConfirmationPurchase = () => {
     return date.toLocaleDateString('es-ES', options);
   };
 
-  // Comprobación si el usuario está logueado al inicio
   const isLoggedIn = !!localStorage.getItem('user');
   const user = isLoggedIn ? JSON.parse(localStorage.getItem('user')) : null; // Obtenemos el usuario desde localStorage
 
@@ -25,25 +28,69 @@ const ConfirmationPurchase = () => {
     }
   }, [isLoggedIn]);
 
-  // Función para eliminar la reserva comprada de localStorage
   const removeBookedItem = () => {
     const savedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
     const updatedBookings = savedBookings.filter(item => item.id !== booking.id); // Filtramos el viaje comprado
     localStorage.setItem('bookings', JSON.stringify(updatedBookings));
   };
 
-  // Copiar ID de transacción al portapapeles
   const handleCopyId = () => {
     if (transactionId) {
       navigator.clipboard.writeText(transactionId);
       alert("ID copiado al portapapeles.");
     }
   };
-
-  // Redirigir a MyBookings después de la compra
   const handleRedirect = () => {
+    if (!isLoggedIn) {
+      alert("Por favor, inicia sesión para completar tu compra.");
+      return;
+    }
+
+
+    const savePurchasedTrip = (userId, tripData) => {
+      const savedTrips = JSON.parse(localStorage.getItem(`purchasedTrips_${userId}`)) || [];
+      savedTrips.push(tripData);
+      localStorage.setItem(`purchasedTrips_${userId}`, JSON.stringify(savedTrips));
+    };
+    
+  
+    // Obtener el ID del usuario logueado
+    const userId = user.id; // Asumimos que el objeto `user` tiene un `id`
+  
+    // Agregar el viaje a la lista de viajes comprados en localStorage del usuario
+    const purchasedTrip = {
+      name: booking.name,
+      price: totalPrice, // El precio total de la compra
+      duration: booking.duration,
+      description: booking.description,
+      image: booking.image, // Puedes guardar la imagen si lo deseas
+    };
+  
+    // Recuperar las compras anteriores del usuario desde localStorage
+    let purchasedTrips = JSON.parse(localStorage.getItem(`purchasedTrips_${userId}`)) || [];
+  
+    // Agregar el nuevo viaje comprado
+    purchasedTrips.push(purchasedTrip);
+
+    savePurchasedTrip(userId, purchasedTrip);
+  
+    // Guardar las compras actualizadas en localStorage bajo la clave del usuario
+    localStorage.setItem(`purchasedTrips_${userId}`, JSON.stringify(purchasedTrips));
+  
     removeBookedItem(); // Eliminar el viaje de las reservas locales
-    navigate('/mis-viajes'); // Redirigir a la página de reservas
+    navigate('/mis-viajes-comprados'); // Redirigir a la página de "Mis viajes comprados"
+  };
+  
+  
+
+  const handlePaymentSubmit = (e) => {
+    e.preventDefault();
+    setPaymentProcessing(true);
+    // Simulamos el proceso de pago con un pequeño retraso
+    setTimeout(() => {
+      setPaymentProcessing(false);
+      alert('Pago simulado realizado con éxito. ¡Gracias por tu compra!');
+    }, 2000);
   };
 
   if (!booking) {
@@ -80,7 +127,65 @@ const ConfirmationPurchase = () => {
           ) : (
             <p><strong>ID de transacción:</strong> (Solo disponible para usuarios registrados)</p>
           )}
-          
+
+          {/* Sección de Pago Simulado */}
+          <div className="mt-8">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Método de Pago</h3>
+            <form onSubmit={handlePaymentSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="cardNumber" className="block text-sm text-gray-700">Número de tarjeta</label>
+                <input
+                  type="text"
+                  id="cardNumber"
+                  name="cardNumber"
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  placeholder="**** **** **** ****"
+                  required
+                />
+              </div>
+
+              <div className="flex space-x-4">
+                <div className="flex-1">
+                  <label htmlFor="cardExpiry" className="block text-sm text-gray-700">Fecha de expiración</label>
+                  <input
+                    type="text"
+                    id="cardExpiry"
+                    name="cardExpiry"
+                    value={cardExpiry}
+                    onChange={(e) => setCardExpiry(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                    placeholder="MM/AA"
+                    required
+                  />
+                </div>
+
+                <div className="flex-1">
+                  <label htmlFor="cardCVC" className="block text-sm text-gray-700">CVC</label>
+                  <input
+                    type="text"
+                    id="cardCVC"
+                    name="cardCVC"
+                    value={cardCVC}
+                    onChange={(e) => setCardCVC(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                    placeholder="CVC (Código de Verificación de la Tarjeta)"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                disabled={paymentProcessing}
+              >
+                {paymentProcessing ? 'Procesando...' : 'Realizar Pago'}
+              </button>
+            </form>
+          </div>
+
           <div className="flex justify-center mt-6 gap-4">
             {isLoggedIn ? (
               <button

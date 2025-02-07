@@ -9,6 +9,7 @@ import RegisterPage from './pages/RegisterPage';
 import MyBookings from './pages/MyBookings';
 import BookingDetails from './pages/BookingDetails';
 import ConfirmationPurchase from './pages/ConfirmationPurchase';
+import PurchasedTrips from './pages/PurchasedTrips'; // Importamos el componente de viajes comprados
 import { AuthProvider } from './components/auth/AuthContext'; // Importar el AuthProvider
 import LoginAdmin from './pages/LoginAdmin'; // Importar el nuevo LoginAdmin
 import AdminPage from './pages/AdminPage'; // Página de admin que debe estar protegida
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/destinations" element={<DestinationsPage />} />
           <Route path="/packages" element={<PackagesPage onAddBooking={handleAddBooking} />} />
           <Route path="/mis-viajes" element={<MyBookings />} />
+          <Route path="/mis-viajes-comprados" element={<PurchasedTrips />} /> {/* Nueva ruta para los viajes comprados */}
           <Route path="/seleccion-pasajes" element={<BookingDetails />} />
           <Route path="/confirmacion" element={<ConfirmationPurchase />} />
           <Route path="/login" element={<LoginPage />} />

@@ -1,10 +1,10 @@
-// src/components/Navbar.js
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext'; // Importar el hook
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Estado para el dropdown de "Mis Viajes"
   const { user, logout } = useAuth(); // Obtener el usuario y logout desde el AuthContext
   const navigate = useNavigate();
   const location = useLocation(); // Obtenemos la ruta actual
@@ -13,9 +13,16 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   const handleLogout = () => {
-    logout(); // Llamar al método logout del AuthContext
-    navigate('/login'); // Redirigir a la página de login
+    const confirmLogout = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
+    if (confirmLogout) {
+      logout(); // Llamar al método logout del AuthContext
+      navigate('/login'); // Redirigir a la página de login
+    }
   };
 
   const isActiveLink = (path) => location.pathname === path; // Función para verificar si el link está activo
@@ -51,7 +58,7 @@ const Navbar = () => {
             className={`text-gray-600 hover:text-gray-800 transition-colors duration-300 ${isActiveLink('/destinations') ? 'font-semibold' : ''}`}
           >
             Destinos
-            {isActiveLink('/destinations') && <span className="ml-2">✈️</span>} {/* Logo de avión */}
+            {isActiveLink('/destinations') && <span className="ml-2">✈️</span>}
           </Link>
 
           <Link 
@@ -59,16 +66,36 @@ const Navbar = () => {
             className={`text-gray-600 hover:text-gray-800 transition-colors duration-300 ${isActiveLink('/packages') ? 'font-semibold' : ''}`}
           >
             Paquetes
-            {isActiveLink('/packages') && <span className="ml-2">✈️</span>} {/* Logo de avión */}
+            {isActiveLink('/packages') && <span className="ml-2">✈️</span>}
           </Link>
 
-          <Link 
-            to="/mis-viajes" 
-            className={`text-gray-600 hover:text-gray-800 transition-colors duration-300 ${isActiveLink('/mis-viajes') ? 'font-semibold' : ''}`}
-          >
-            Mis Viajes
-            {isActiveLink('/mis-viajes') && <span className="ml-2">✈️</span>} {/* Logo de avión */}
-          </Link>
+          <div className="relative">
+            <button 
+              onClick={toggleDropdown}
+              className={`text-gray-600 hover:text-gray-800 transition-colors duration-300 flex items-center gap-2 ${isDropdownOpen ? 'font-semibold' : ''}`}
+            >
+              Mis Viajes
+              {isActiveLink('/mis-viajes') && <span className="ml-2">✈️</span>}
+            </button>
+            {isDropdownOpen && (
+              <div className="absolute bg-white shadow-lg rounded-lg mt-2 w-48 p-2 flex flex-col z-10"> {/* Añadimos z-10 */}
+                <Link 
+                  to="/mis-viajes" 
+                  className={`text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg px-4 py-2 transition-colors duration-200 ${isActiveLink('/mis-viajes') ? 'font-semibold' : ''}`}
+                >
+                  Mis Viajes
+                  {isActiveLink('/mis-viajes') && <span className="ml-2">✈️</span>}
+                </Link>
+                <Link 
+                  to="/mis-viajes-comprados" 
+                  className={`text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg px-4 py-2 transition-colors duration-200 ${isActiveLink('/mis-viajes-comprados') ? 'font-semibold' : ''}`}
+                >
+                  Mis Viajes Comprados
+                  {isActiveLink('/mis-viajes-comprados') && <span className="ml-2">✈️</span>}
+                </Link>
+              </div>
+            )}
+          </div>
 
           {user ? (
             <>
@@ -77,7 +104,7 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="text-gray-600 hover:text-gray-800 transition-colors duration-300">Loguearse</Link>
+              <Link to="/login" className="text-gray-600 hover:text-gray-800 transition-colors duration-300">Iniciar sesión</Link>
               <Link to="/register" className="py-2 px-4 bg-[rgb(26,54,93)] text-white rounded-md hover:bg-[rgb(26,54,93,0.8)]">Registrarse</Link>
             </>
           )}

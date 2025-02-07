@@ -84,6 +84,16 @@ const BookingDetails = () => {
         </div>
 
         <h1 className="text-3xl sm:text-4xl font-bold text-center mb-8">Detalles de tu Reserva</h1>
+        {/* Cartel de Descuentos */}
+    <div className="bg-yellow-100 p-4 rounded-lg shadow-md mb-8">
+      <p className="text-lg text-center text-gray-800">
+        <strong>¡Aprovecha nuestros descuentos por cantidad de pasajes!</strong><br />
+        <span className="block">1 pasaje: Sin descuento</span>
+        <span className="block">2 pasajes: 10% de descuento</span>
+        <span className="block">3 pasajes: 15% de descuento</span>
+        <span className="block">4 o más pasajes: 20% de descuento</span>
+      </p>
+    </div>
 
         <div className="bg-white shadow-lg rounded-lg overflow-hidden p-6 md:p-10">
           <h2 className="text-2xl font-bold text-primary mb-4">Resumen del Paquete</h2>
