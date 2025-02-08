@@ -8,6 +8,10 @@ module.exports = {
         pastelBlue: '#A3C8E4', // Azul pastel
         pastelGreen: '#A7D8B4', // Verde pastel
       },
+      fontFamily: {
+        sans: ['Poppins', 'sans-serif'],
+      },
+      
     },
   },
   plugins: [],

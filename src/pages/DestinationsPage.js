@@ -1,6 +1,6 @@
 // src/pages/DestinationsPage.js
 import React, { useState } from 'react';
-import { Footer } from "../components/common/Footer"; // Asegúrate de que la ruta sea correcta
+import { Footer } from "../components/common/Footer";
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'; // Importamos los íconos de flechas
 
 const destinos = [
@@ -63,7 +63,6 @@ const destinos = [
 const DestinationsPage = () => {
   const [openFAQ, setOpenFAQ] = useState(null); // Estado para manejar el acordeón de FAQ
 
-  // Función para manejar la apertura/cierre de cada pregunta
   const toggleFAQ = (index) => {
     setOpenFAQ(openFAQ === index ? null : index); // Si la misma pregunta es clickeada, se cierra
   };
@@ -83,30 +82,34 @@ const DestinationsPage = () => {
         {/* Grilla de destinos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {destinos.map((destino) => (
-            <div key={destino.id} className="overflow-hidden bg-white shadow-lg rounded-lg hover:shadow-xl transition-all duration-300 ease-in-out">
-              <img
-                src={destino.imagen}
-                alt={destino.nombre}
-                className="w-full h-48 sm:h-60 object-cover rounded-t-lg"
-              />
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">{destino.nombre}</h3>
-                <p className="text-gray-600 mb-2">{destino.descripcion}</p>
-                <div className="flex justify-between items-center text-gray-600">
-                  <span>{destino.duracion}</span>
-                  <span className="font-semibold text-primary">
-                    {destino.precio}
-                  </span>
+            <div key={destino.id} className="overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg rounded-2xl hover:scale-105 transform transition-all duration-500 ease-in-out">
+              <div className="flex flex-col sm:flex-row bg-white p-6 rounded-2xl">
+                <div className="flex-shrink-0 w-full sm:w-48 h-48 mb-4 sm:mb-0 overflow-hidden rounded-lg shadow-md">
+                  <img
+                    src={destino.imagen}
+                    alt={destino.nombre}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="mt-2 text-yellow-500">
-                  {"★".repeat(Math.floor(destino.calificacion))}
-                  <span className="text-gray-400 ml-1">
-                    ({destino.calificacion})
-                  </span>
+                <div className="flex-1 pl-0 sm:pl-6">
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">{destino.nombre}</h3>
+                  <p className="text-gray-600 mb-2">{destino.descripcion}</p>
+                  <div className="flex justify-between items-center text-gray-600">
+                    <span>{destino.duracion}</span>
+                    <span className="font-semibold text-indigo-700">
+                      {destino.precio}
+                    </span>
+                  </div>
+                  <div className="mt-2 text-yellow-500">
+                    {"★".repeat(Math.floor(destino.calificacion))}
+                    <span className="text-gray-400 ml-1">
+                      ({destino.calificacion})
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div className="p-4 pt-0">
-                <button className="w-full py-2 bg-[rgb(26,54,93)] text-white rounded-md hover:bg-[rgb(26,54,93,0.8)]">
+              <div className="px-6 py-4 bg-gray-100 rounded-b-2xl">
+                <button className="w-full py-2 bg-[rgb(26,54,93)] text-white rounded-md hover:bg-[rgb(26,54,93,0.8)] transition-all duration-300 ease-in-out">
                   Ver detalles
                 </button>
               </div>
@@ -120,7 +123,7 @@ const DestinationsPage = () => {
             Preguntas Frecuentes
           </h2>
           <div className="w-full">
-            {[
+            {[ 
               { pregunta: "¿Cómo puedo reservar un destino?", respuesta: "Para reservar un destino, selecciona el destino que te interese y sigue el proceso de reserva." },
               { pregunta: "¿Qué incluyen los paquetes de viaje?", respuesta: "Nuestros paquetes incluyen alojamiento, traslados y algunas actividades según el destino." },
               { pregunta: "¿Cuál es la política de cancelación?", respuesta: "Las cancelaciones varían según el destino. Generalmente, si cancelas más de 30 días antes, recibes un reembolso completo." },

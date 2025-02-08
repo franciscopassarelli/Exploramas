@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PurchasedTripsTable from './PurchasedTripsTable';
+import PurchasedTripsList from './PurchasedTripsList';
 
 const PurchasedTrips = () => {
   const [purchasedTrips, setPurchasedTrips] = useState([]);
   const navigate = useNavigate();
 
-  // Obtener el estado de login y usuario desde localStorage
-  const isLoggedIn = !!localStorage.getItem('user'); // Chequear si hay un usuario logueado
-  const user = isLoggedIn ? JSON.parse(localStorage.getItem('user')) : null; // Obtener los detalles del usuario
+  const isLoggedIn = !!localStorage.getItem('user');
+  const user = isLoggedIn ? JSON.parse(localStorage.getItem('user')) : null;
 
   useEffect(() => {
     if (isLoggedIn && user) {
-      const userId = user.id; // Obtener el ID del usuario logueado
+      const userId = user.id;
       const savedPurchases = JSON.parse(localStorage.getItem(`purchasedTrips_${userId}`)) || [];
       setPurchasedTrips(savedPurchases);
     }
-  }, []); // Empty dependency array, effect runs only once when the component mounts
-  
+  }, []); 
 
   const handleReturnToBookings = () => {
     navigate('/mis-viajes');
@@ -32,23 +32,14 @@ const PurchasedTrips = () => {
             <p className="text-gray-600">No tienes viajes comprados todavía.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {purchasedTrips.map((trip, index) => (
-              <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden">
-                <img
-                  src={trip.image || 'https://via.placeholder.com/400x250'}
-                  alt={trip.name}
-                  className="w-full h-48 sm:h-60 object-cover rounded-t-lg"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-bold">{trip.name}</h3>
-                  <p>Precio: ${trip.price}</p>
-                  <p>Duración: {trip.duration}</p>
-                  <p>{trip.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <>
+            <div className="hidden sm:block">
+              <PurchasedTripsTable trips={purchasedTrips} />
+            </div>
+            <div className="sm:hidden">
+              <PurchasedTripsList trips={purchasedTrips} />
+            </div>
+          </>
         )}
 
         <div className="mt-8 text-center">
