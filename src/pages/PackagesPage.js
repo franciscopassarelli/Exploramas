@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PackageModal from '../components/packages/PackageModal';
 import DesktopCarousel from '../components/common/DesktopCarousel'; 
 import MobileCarousel from '../components/common/MobileCarousel';    
 import { Footer } from "../components/common/Footer"; 
-
+import { getAllProducts } from '../firebase/products';
+import ProductCardList from '../components/packages/PackageCardList'; // Asegúrate de que la ruta sea correcta
 const predefinedPackages = [
   // Aquí van tus viajes predefinidos (el array packages original)
 
@@ -158,30 +159,42 @@ const PackagesPage = () => {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [packages, setPackages] = useState([]);
+  const [products, setProducts] = useState([]);
 
   // Detectar el tamaño de la pantalla
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
-      }
-    };
 
-    handleResize(); // Llamar al inicio para comprobar el tamaño de la pantalla
-    window.addEventListener('resize', handleResize);
+  
+ // Para manejar el resize y determinar si es mobile
+useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+  handleResize(); // Inicial
+  window.addEventListener('resize', handleResize);
 
-  // Cargar los paquetes desde localStorage y combinarlos con los paquetes predefinidos
-  useEffect(() => {
-    const storedPackages = JSON.parse(localStorage.getItem('products')) || [];
-    setPackages([...predefinedPackages, ...storedPackages]); // Combinamos los paquetes predefinidos con los guardados
-  }, []);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
+// Para cargar productos desde Firebase
+useEffect(() => {
+  const fetch = async () => {
+    const res = await getAllProducts();
+    setProducts(res);
+  };
+  fetch();
+}, []);
+
+  // Para cargar productos desde Firebase y combinarlos con los predefinidos
+useEffect(() => {
+  const fetch = async () => {
+    const paquetes = await getAllProducts();
+    setProducts(paquetes);
+    setPackages([...predefinedPackages, ...paquetes]); // ya combinás aquí
+  };
+  fetch();
+}, []);
+
 
   const handlePackageSelect = (pkg) => {
     setSelectedPackage(pkg);
@@ -303,6 +316,9 @@ const PackagesPage = () => {
     ))}
   </div>
 </div>
+<div className="container mx-auto px-4 py-8 flex-grow">
+ <ProductCardList products={products} />
+  </div>
 
 <Footer/>
 
@@ -312,6 +328,4 @@ const PackagesPage = () => {
 };
 
 export default PackagesPage;
-
-
 

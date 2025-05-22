@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa'; // Iconos de editar y eliminar
 import { FaPlane } from 'react-icons/fa'; // Icono de avión para el loader
+import { getAllProducts, addProduct, deleteProduct } from '../firebase/products'; // Asegúrate de que la ruta sea correcta
+
+
 
 // Componente Loader con el avión giratorio
 const Loader = () => (
@@ -24,11 +27,14 @@ const AdminPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false); // Estado para manejar el loader
 
-  // Cargar productos desde localStorage al iniciar la página
   useEffect(() => {
-    const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
-    setProducts(storedProducts);
+    const fetchProducts = async () => {
+      const productsFromFirebase = await getAllProducts();
+      setProducts(productsFromFirebase);
+    };
+    fetchProducts();
   }, []);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,46 +58,36 @@ const AdminPage = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     if (validateForm()) {
-      setLoading(true);  // Mostrar el loader al comenzar la acción
-
+      setLoading(true);
       const includesArray = Array.isArray(newProduct.includes)
         ? newProduct.includes
-        : newProduct.includes.split(',').map(item => item.trim()); // Convertimos la cadena a un arreglo
-
+        : newProduct.includes.split(',').map((item) => item.trim());
+  
       const product = {
         ...newProduct,
-        includes: includesArray, // Aseguramos que 'includes' sea un arreglo
-        id: Date.now() // Asignamos un ID único al nuevo producto
+        includes: includesArray,
       };
-
-      const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
-      storedProducts.push(product);
-      localStorage.setItem('products', JSON.stringify(storedProducts));
-
-      setProducts(storedProducts);
-
-      // Limpiamos el formulario
+  
+      const savedProduct = await addProduct(product);
+      setProducts((prev) => [...prev, savedProduct]);
+  
+      // Limpieza
       setNewProduct({ name: '', description: '', price: null, duration: '', includes: [], rating: 0, image: '' });
       setImagePreview(null);
       setErrors({});
-
-      // Simulamos una espera (puedes usar la espera real si tienes una API)
-      setTimeout(() => setLoading(false), 1000); // Ocultamos el loader después de 1 segundo
+      setTimeout(() => setLoading(false), 1000);
     }
   };
-
-  const handleDeleteProduct = (productId) => {
-    setLoading(true);  // Mostrar el loader al comenzar la acción
-
-    const updatedProducts = products.filter((product) => product.id !== productId);
-    localStorage.setItem('products', JSON.stringify(updatedProducts));
-    setProducts(updatedProducts);
-
-    setTimeout(() => setLoading(false), 1000); // Ocultamos el loader después de 1 segundo
+  
+  const handleDeleteProduct = async (productId) => {
+    setLoading(true);
+    await deleteProduct(productId);
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    setTimeout(() => setLoading(false), 1000);
   };
+  
 
   const handleEditProduct = (productId) => {
     setLoading(true);  // Mostrar el loader al comenzar la acción

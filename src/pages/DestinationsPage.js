@@ -108,11 +108,7 @@ const DestinationsPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="px-6 py-4 bg-gray-100 rounded-b-2xl">
-                <button className="w-full py-2 bg-[rgb(26,54,93)] text-white rounded-md hover:bg-[rgb(26,54,93,0.8)] transition-all duration-300 ease-in-out">
-                  Ver detalles
-                </button>
-              </div>
+             
             </div>
           ))}
         </div>

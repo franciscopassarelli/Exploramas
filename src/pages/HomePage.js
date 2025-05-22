@@ -8,7 +8,6 @@ const HomePage = () => {
   const [fade, setFade] = useState(true); 
   const [search, setSearch] = useState(""); 
 
-  // Lista de destinos (sin API ni backend)
   const destinations = [
     "Playa del Carmen, México", 
     "Montañas de los Andes, Mendoza Argentina", 
@@ -28,11 +27,8 @@ const HomePage = () => {
     "Cataratas del Iguzú, Argentina"
   ];
 
-  // Filtrar destinos con base en la búsqueda, considerando las primeras 3 letras de cada palabra
   const filteredDestinations = destinations.filter(destination => {
-    // Dividir el destino en palabras
     const words = destination.split(" ");
-    // Verificar si alguna palabra comienza exactamente con las letras de la búsqueda (al menos 3 letras)
     return words.some(word => 
       word.toLowerCase().startsWith(search.toLowerCase())
     );
@@ -52,67 +48,72 @@ const HomePage = () => {
 
   return (
     <div>
-      {/* Sección de presentación */}
-      <div className="relative h-[600px] sm:h-[500px] lg:h-[600px] flex items-center justify-center bg-cover bg-center" style={{
-        backgroundImage: "url('https://images.unsplash.com/photo-1469474968028-56623f02e42e')"
-      }}>
-        <div className="absolute inset-0 bg-black opacity-50" />
-        <div className="relative z-10 text-center text-white px-4 md:px-8">
-        <h1 className="text-4xl sm:text-5xl font-bold mb-6 animate-fadeIn titulo-brillante">
-  Descubre tu próxima aventura
-</h1>
+      {/* Sección de presentación con imagen de fondo y fade */}
+      <div className="relative h-[600px] sm:h-[500px] lg:h-[600px] flex items-center justify-center overflow-hidden">
+        {/* Imagen con fade */}
+        <img
+          src="https://images.unsplash.com/photo-1469474968028-56623f02e42e"
+          alt="Fondo"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
+            fade ? "opacity-100" : "opacity-0"
+          }`}
+          onLoad={() => setFade(true)}
+          loading="lazy"
+        />
 
-<p className="text-lg sm:text-xl mb-8 max-w-3xl mx-auto p-dorado">
-  Explora los destinos más bellos del mundo con nuestros paquetes de viaje seleccionados
-</p>
+        {/* Capa oscura */}
+        <div className="absolute inset-0 bg-black bg-opacity-50 z-10" />
 
-          {/* Barra de búsqueda con lupa dentro */}
+        {/* Contenido encima */}
+        <div className="relative z-20 text-center text-white px-4 md:px-8">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-6 animate-fadeIn titulo-brillante">
+            Descubre tu próxima aventura
+          </h1>
+
+          <p className="text-lg sm:text-xl mb-8 max-w-3xl mx-auto p-dorado">
+            Explora los destinos más bellos del mundo con nuestros paquetes de viaje seleccionados
+          </p>
+
+          {/* Barra de búsqueda */}
           <div className="relative w-full sm:w-auto max-w-md mx-auto">
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar destinos"
-              className="w-full px-6 py-3 pl-10 pr-4 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pastelBlue focus:ring-opacity-50 transition-all duration-300 ease-in-out 
-                         border-2 border-gray-300 hover:border-gray-400 focus:border-[#FF7C5D] shadow-md"
+              className="w-full px-6 py-3 pl-10 pr-4 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pastelBlue focus:ring-opacity-50 transition-all duration-300 ease-in-out border-2 border-gray-300 hover:border-gray-400 focus:border-[#FF7C5D] shadow-md"
             />
-            {/* Lupa dentro del input */}
             <MagnifyingGlassIcon 
               className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500 transition-colors duration-200 hover:text-[#FF7C5D]" 
             />
           </div>
 
-          {/* Mostrar destinos filtrados */}
+          {/* Resultados */}
           {search && (
-  <div className="mt-6 text-white">
-    <h3 className="font-semibold mb-4">Resultados de búsqueda:</h3>
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 sm:gap-2">
-      {filteredDestinations.length > 0 ? (
-        filteredDestinations.map((destination, index) => (
-          <div key={index} className="bg-[rgb(26,54,93)] text-white p-2 sm:p-3 rounded-md shadow-sm hover:shadow-md hover:scale-102 hover:bg-[rgb(26,54,93,0.8)] transition-all duration-150 ease-in-out">
-            <p className="text-xs sm:text-sm font-semibold">{destination}</p>
-          </div>
-        ))
-      ) : (
-        <div className="text-lg">No se encontraron destinos.</div>
-      )}
-    </div>
-  </div>
-)}
-
-
-
-
+            <div className="mt-6 text-white">
+              <h3 className="font-semibold mb-4">Resultados de búsqueda:</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 sm:gap-2">
+                {filteredDestinations.length > 0 ? (
+                  filteredDestinations.map((destination, index) => (
+                    <div key={index} className="bg-[rgb(26,54,93)] text-white p-2 sm:p-3 rounded-md shadow-sm hover:shadow-md hover:scale-102 hover:bg-[rgb(26,54,93,0.8)] transition-all duration-150 ease-in-out">
+                      <p className="text-xs sm:text-sm font-semibold">{destination}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-lg">No se encontraron destinos.</div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Resto de las secciones */}
+      {/* Secciones informativas */}
       <div className="py-16 text-center">
         <h2 className={`text-3xl font-bold text-gray-800 mb-6 transition-opacity duration-1000 ${fade ? "opacity-100" : "opacity-0"}`}>
           {currentSection === 0 ? "¿Por qué elegirnos?" : "¿Cómo funciona?"}
         </h2>
 
-        {/* Contenido de las tarjetas */}
         <div className="max-w-5xl mx-auto">
           <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 transition-opacity duration-2000 ${fade ? "opacity-100" : "opacity-0"}`}>
             {currentSection === 0 ? (
@@ -150,7 +151,7 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Sección de destinos destacados */}
+      {/* Destinos destacados */}
       <div className="py-8 px-4 sm:px-6 lg:px-8">
         <FeaturedDestinations />
       </div>
