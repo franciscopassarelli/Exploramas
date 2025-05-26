@@ -5,7 +5,6 @@ import DesktopCarousel from '../components/common/DesktopCarousel';
 import MobileCarousel from '../components/common/MobileCarousel';    
 import { Footer } from "../components/common/Footer"; 
 import { getAllProducts } from '../firebase/products';
-import ProductCardList from '../components/packages/PackageCardList'; // Asegúrate de que la ruta sea correcta
 const predefinedPackages = [
   // Aquí van tus viajes predefinidos (el array packages original)
 
@@ -316,9 +315,7 @@ useEffect(() => {
     ))}
   </div>
 </div>
-<div className="container mx-auto px-4 py-8 flex-grow">
- <ProductCardList products={products} />
-  </div>
+
 
 <Footer/>
 
