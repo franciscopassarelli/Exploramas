@@ -1,53 +1,62 @@
 // src/pages/RegisterPage.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../components/auth/AuthContext'; // Importar el hook de autenticación
+import { useAuth } from '../components/auth/AuthContext';
+import { auth } from '../firebase/firebaseConfig';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showAlert, setShowAlert] = useState(false); // Estado para mostrar la alerta
-  const [alertMessage, setAlertMessage] = useState(''); // Mensaje de la alerta
-  const { login } = useAuth(); // Usamos el contexto para hacer el login
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Verificar si las contraseñas coinciden
     if (password !== confirmPassword) {
       setAlertMessage("¡Las contraseñas no coinciden!");
       setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 2000); // Ocultar la alerta después de 2 segundos
       return;
     }
 
-    // Verificar si el usuario ya existe
-    const existingUser = localStorage.getItem(email);
-    if (existingUser) {
-      setAlertMessage('Este correo electrónico ya está registrado.');
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Podés usar updateProfile si querés pedirle nombre en otro input
+      // await updateProfile(user, { displayName: 'Nombre del usuario' });
+
+      const userData = {
+        email: user.email,
+        uid: user.uid,
+        name: user.displayName || '',
+        photoURL: user.photoURL || '',
+      };
+
+      login(userData);
+
+      setAlertMessage('Registro exitoso');
       setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 2000); // Ocultar la alerta después de 2 segundos
-      return;
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (error) {
+      console.error('Error al registrar usuario:', error.message);
+      setAlertMessage('Error al registrar: ' + error.message);
+      setShowAlert(true);
     }
-
-    // Crear el objeto de usuario
-    const user = { email, password };
-    
-    // Guardar el usuario en localStorage con el email como clave
-    localStorage.setItem(email, JSON.stringify(user));
-
-    // Loguear al usuario inmediatamente
-    login(user);
-
-    setAlertMessage("Registro exitoso");
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-      navigate('/'); // Redirigir al home o la página principal
-    }, 2000); // Redirigir después de 2 segundos
   };
+
+  useEffect(() => {
+    if (showAlert) {
+      const timer = setTimeout(() => setShowAlert(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert]);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#2c3e50] to-[#34495e] flex items-center justify-center">
@@ -55,51 +64,54 @@ const RegisterPage = () => {
         <h2 className="text-3xl sm:text-4xl font-semibold text-center text-gray-800 mb-6">Crear una cuenta</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="email">
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
               Dirección de correo electrónico
             </label>
             <input
               type="email"
               id="email"
-              name="email"
-              className="w-full px-6 py-3 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#2980b9] focus:ring-opacity-50 transition-all duration-300 ease-in-out"
+              className="w-full px-6 py-3 border border-gray-300 rounded-lg"
               placeholder="Ingresa tu correo electrónico"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="password">
+            <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
               Contraseña
             </label>
             <input
               type="password"
               id="password"
-              name="password"
-              className="w-full px-6 py-3 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#2980b9] focus:ring-opacity-50 transition-all duration-300 ease-in-out"
+              className="w-full px-6 py-3 border border-gray-300 rounded-lg"
               placeholder="Ingresa tu contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="confirmPassword">
+            <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-2">
               Confirmar contraseña
             </label>
             <input
               type="password"
               id="confirmPassword"
-              name="confirmPassword"
-              className="w-full px-6 py-3 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#2980b9] focus:ring-opacity-50 transition-all duration-300 ease-in-out"
+              className="w-full px-6 py-3 border border-gray-300 rounded-lg"
               placeholder="Confirma tu contraseña"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              required
             />
           </div>
 
-          <button type="submit" className="w-full py-3 bg-[#2980b9] text-white rounded-lg hover:bg-[#2980b9]/80 focus:outline-none transition-all duration-300 ease-in-out">
+          <button
+            type="submit"
+            className="w-full py-3 bg-[#2980b9] text-white rounded-lg hover:bg-[#2980b9]/80"
+          >
             Registrarse
           </button>
         </form>
@@ -112,9 +124,8 @@ const RegisterPage = () => {
         </p>
       </div>
 
-      {/* Alerta estilizada */}
       {showAlert && (
-        <div className="fixed top-0 left-0 w-full p-4 bg-gray-800 text-white text-center font-semibold shadow-lg transform transition-all duration-300 ease-in-out">
+        <div className="fixed top-0 left-0 w-full p-4 bg-gray-800 text-white text-center font-semibold shadow-lg">
           {alertMessage}
         </div>
       )}

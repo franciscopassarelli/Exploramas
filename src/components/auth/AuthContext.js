@@ -1,36 +1,51 @@
-// src/components/AuthContext.js
+// src/components/auth/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { auth } from '../../firebase/firebaseConfig'; // ajustá el path si es necesario
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Esperamos a que Firebase diga si hay sesión
 
-  // Al iniciar la aplicación, intenta obtener el usuario del localStorage
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser) {
-      setUser(storedUser); // Si el usuario está guardado, lo carga al estado
-    }
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        const userData = {
+          email: firebaseUser.email,
+          name: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+          uid: firebaseUser.uid,
+        };
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+      } else {
+        setUser(null);
+        localStorage.removeItem('user');
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const login = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData)); // Guardar el usuario en localStorage
-    setUser(userData); // Establecer el usuario en el estado
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
-  const logout = () => {
-    setUser(null); // Limpiar el estado del usuario en el contexto
-    localStorage.removeItem('user'); // Eliminar el usuario del localStorage
+  const logout = async () => {
+    await signOut(auth); // Cerramos la sesión en Firebase
+    setUser(null);
+    localStorage.removeItem('user');
   };
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
